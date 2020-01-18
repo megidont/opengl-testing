@@ -19,6 +19,30 @@ public class test{
 
 	private long testWindow;
 
+	private boolean shouldRedInc = false;
+	private boolean shouldGreenInc = false;
+	private boolean shouldBlueInc = false;
+
+	private float curRed = (float)0x88/0xff;
+	private float curGreen = (float)0x22/0xff;
+	private float curBlue = (float)0x99/0xff;
+
+	public float incCol(float col){
+
+		if (col == (float)0xff/0xff){
+
+			col = (float)0x00/0xff;
+
+		}else{
+
+			col += (float)0x11/0xff;
+
+		}
+
+		return col;
+
+	}
+
 	public void run(){
 
 		init();
@@ -39,7 +63,7 @@ public class test{
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		testWindow = glfwCreateWindow(640, 480, "Test", glfwGetPrimaryMonitor(), NULL);
+		testWindow = glfwCreateWindow(640, 480, "ColorTester mk. 69", NULL, NULL);
 
 		if(testWindow == NULL){throw new RuntimeException("Run this from cmd, dorkus");}
 
@@ -51,7 +75,27 @@ public class test{
 
 			}else if(key == GLFW_KEY_F11 && action == GLFW_RELEASE){
 
-				glfwSetWindowMonitor(window, NULL, 40, 40, 640, 480, GLFW_DONT_CARE);
+				if(glfwGetWindowMonitor(window) != NULL){
+
+					glfwSetWindowMonitor(window, NULL, 40, 40, 640, 480, GLFW_DONT_CARE);
+
+				}else{
+
+					glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), GLFW_DONT_CARE, GLFW_DONT_CARE, 640, 480, GLFW_DONT_CARE);
+
+				}
+
+			}else if(key == GLFW_KEY_R && action == GLFW_RELEASE){
+
+				shouldRedInc = true;
+
+			}else if(key == GLFW_KEY_G && action == GLFW_RELEASE){
+
+				shouldGreenInc = true;
+
+			}else if(key == GLFW_KEY_B && action == GLFW_RELEASE){
+
+				shouldBlueInc = true;
 
 			}
 
@@ -83,7 +127,7 @@ public class test{
 
 		GL.createCapabilities();
 
-		glClearColor((float)0x88/0xFF, (float)0x22/0xFF, (float)0x99/0xFF, (float)0x00/0x00);
+		glClearColor(curRed, curGreen, curBlue, (float)0x00/0xff);
 
 		while(!glfwWindowShouldClose(testWindow)){
 
@@ -92,6 +136,30 @@ public class test{
 			glfwSwapBuffers(testWindow);
 
 			glfwPollEvents();
+
+			if(shouldRedInc){
+
+				shouldRedInc = false;
+				curRed = incCol(curRed);
+				glClearColor(curRed, curGreen, curBlue, (float)0x00/0xff);
+
+			}
+
+			if(shouldGreenInc){
+
+				shouldGreenInc = false;
+				curGreen = incCol(curGreen);
+				glClearColor(curRed, curGreen, curBlue, (float)0x00/0xff);
+
+			}
+
+			if(shouldBlueInc){
+
+				shouldBlueInc = false;
+				curBlue = incCol(curBlue);
+				glClearColor(curRed, curGreen, curBlue, (float)0x00/0xff);
+
+			}
 
 		}
 
