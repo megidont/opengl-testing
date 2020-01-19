@@ -1,5 +1,6 @@
 import java.nio.*;
 import java.util.*;
+import java.io.*;
 
 import org.lwjgl.*;
 
@@ -17,7 +18,10 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class test{
 
+	private PNGTexture testTexture;
+
 	private long testWindow;
+	private String testWindowTitle = "Color Machine Mk. 69";
 
 	private boolean shouldRedInc = false;
 	private boolean shouldGreenInc = false;
@@ -52,18 +56,20 @@ public class test{
 		glfwDestroyWindow(testWindow);
 
 		glfwTerminate();
-		glfwSetErrorCallback(null);
+		glfwSetErrorCallback(null).free();
 
 	}
 
 	public void init(){
+
+		GLFWErrorCallback.createPrint(System.err).set();
 
 		if(!glfwInit()){throw new IllegalStateException("GLFW Machine Broke");}
 
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		testWindow = glfwCreateWindow(640, 480, "ColorTester mk. 69", NULL, NULL);
+		testWindow = glfwCreateWindow(640, 480, testWindowTitle, NULL, NULL);
 
 		if(testWindow == NULL){throw new RuntimeException("Run this from cmd, dorkus");}
 
@@ -121,11 +127,30 @@ public class test{
 
 		glfwShowWindow(testWindow);
 
+		GL.createCapabilities();
+
+
+/*Running before I walk...
+
+		try{
+
+			testTexture = PNGTexture.loadTexture("./test.png");
+
+		}catch(IOException e){
+
+			System.out.println("IOException: " + e.getMessage());
+
+		}
+
+*/
+
+//Steal the mouse:
+
+//		glfwSetInputMode(testWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	}
 
 	public void loop(){
-
-		GL.createCapabilities();
 
 		glClearColor(curRed, curGreen, curBlue, (float)0x00/0xff);
 
