@@ -44,6 +44,10 @@ public class test{
 	private float curGreen = (float)0x22/0xff;
 	private float curBlue = (float)0x99/0xff;
 
+//	store previous coordinates for toggling fullscreen, with default values!
+	private int prevx = 40;
+	private int prevy = 40;
+
 //	increment and return a colour float
 	public float incCol(float col){
 
@@ -123,11 +127,27 @@ public class test{
 				if(glfwGetWindowMonitor(window) != NULL){
 
 //					if so, get out of fullscreen
-					glfwSetWindowMonitor(window, NULL, 40, 40, 640, 480, GLFW_DONT_CARE);
+					glfwSetWindowMonitor(window, NULL, prevx, prevy, 640, 480, GLFW_DONT_CARE);
 
 				}else{
 
-//					if not, get into fullscreen
+//					if not, get current window location...
+					try (MemoryStack stack = stackPush()){
+
+//						prepare an intbuffer to store variables in...
+						IntBuffer currentTestWindowX = stack.mallocInt(1);
+						IntBuffer currentTestWindowY = stack.mallocInt(1);
+
+//						...get the variables...
+						glfwGetWindowPos(testWindow, currentTestWindowX, currentTestWindowY);
+
+//						...and store them in our nice spot!
+						prevx = currentTestWindowX.get();
+						prevy = currentTestWindowY.get();
+
+					}
+
+//					...and get into fullscreen
 					glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), GLFW_DONT_CARE, GLFW_DONT_CARE, 640, 480, GLFW_DONT_CARE);
 
 				}
@@ -148,25 +168,6 @@ public class test{
 			}
 
 		});
-
-//		I don't know why we have to malloc a single int to use as an intbuffer, but I guess
-//		doing it like this saves jvm slowdowns.
-		try (MemoryStack stack = stackPush()){
-
-//			prepare an intbuffer to store variables in
-			IntBuffer currentTestWindowWidth = stack.mallocInt(1);
-			IntBuffer currentTestWindowHeight = stack.mallocInt(1);
-
-//			get the variables (that I never actually use now lmao)
-			glfwGetWindowSize(testWindow, currentTestWindowWidth, currentTestWindowHeight);
-
-//			and we tuck away information about our video mode that we don't use anymore lol
-			GLFWVidMode currentVidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-//			System.out.println("currentTestWindowWidth: " + Arrays.toString(currentTestWindowWidth.array()));
-//			System.out.println("currentTestWindowHeight: " + Arrays.toString(currentTestWindowHeight.array()));
-
-		}
 
 //		we say that this window is the one we're using for all the stuff on this thread
 		glfwMakeContextCurrent(testWindow);
