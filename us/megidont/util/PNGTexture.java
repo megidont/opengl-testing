@@ -68,6 +68,9 @@ public class PNGTexture{
 //		...Generate the mipmap...
 		glGenerateMipmap(GL_TEXTURE_2D);
 
+//		...Unbind the Texture...
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 //		...and construct a wrapper for it to keep track of the ID!
 		return new PNGTexture(id);
 
